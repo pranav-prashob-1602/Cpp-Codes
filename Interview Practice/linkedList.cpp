@@ -37,6 +37,9 @@ public:
     bool isPalin(Node** left, Node* right);
     void removeDupsInSorted(Node* head);
     void removeDupsInUnsorted(Node* head);
+    Node* sortedIntersect(Node* a, Node* b);
+    int getIntersection(Node* a, Node* b);
+    void reverseList(Node** head);
 
 };
 
@@ -245,6 +248,74 @@ void Node::removeDupsInUnsorted(Node* head) {
     }
 }
 
+Node* Node::sortedIntersect(Node* a, Node* b) {
+    Node* head=new Node();
+    Node* ptr=head;
+    Node* ptr1=a, *ptr2=b;
+    while(ptr1!=NULL && ptr2!=NULL) {
+        if(ptr1->val==ptr2->val) {
+            Node* c=new Node(ptr1->val);
+            ptr->next=c;
+            ptr=ptr->next;
+            ptr1=ptr1->next;
+            ptr2=ptr2->next;
+        }else if(ptr1->val>ptr2->val) {
+            ptr2=ptr2->next;
+        }else {
+            ptr1=ptr1->next;
+        }
+    }
+    Node* temp=head;
+    head=head->next;
+    temp->next=NULL;
+    delete(temp);
+    return head;
+}
+
+Node* getIntersectionValue(int d, Node* a, Node* b) {
+    Node* ptr1=a;
+    Node* ptr2=b;
+    for(int i=0;i<d;i++) {
+        if(ptr1==NULL) {
+            return NULL;
+        }
+        ptr1=ptr1->next;
+    }
+    while(ptr1!=NULL && ptr2!=NULL) {
+        if(ptr1==ptr2) {
+            return ptr1;
+        }
+        ptr1=ptr1->next;
+        ptr2=ptr2->next;
+    }
+    return NULL;
+}
+
+int Node::getIntersection(Node* a, Node* b) {
+    int n=a->length();
+    int m=b->length();
+    int d=abs(a-b);
+    if(n>m) {
+        Node* ptr = getIntersectionValue(d, a, b);
+        return ptr==NULL ? -1 : ptr->val;
+    }else {
+        Node* ptr = getIntersectionValue(d, b, a);
+        return ptr==NULL ? -1 : ptr->val;
+    }
+}
+
+void Node::reverseList(Node** head) {
+    Node* ptr=*head;
+    Node* prev=NULL, *nxt;
+    while(ptr!=NULL) {
+        nxt=ptr->next;
+        ptr->next=prev;
+        prev=ptr;
+        ptr=nxt;
+    }
+    *head=prev;
+}
+
 int main() {
     Node* head=new Node(5);
     head->insertNode(&head, 11);
@@ -299,6 +370,24 @@ int main() {
     head->removeDupsInSorted(head);
     head->display(head);
     head->removeDupsInUnsorted(head);
+    head->display(head);
+    Node* a=new Node(9);
+    a->insertNode(&a, 6);
+    a->insertNode(&a, 5);
+    a->insertNode(&a, 4);
+    a->insertNode(&a, 2);
+    Node* b=new Node(9);
+    b->insertNode(&b, 6);
+    b->insertNode(&b, 4);
+    b->insertNode(&b, 3);
+    b->insertNode(&b, 2);
+    a->display(a);
+    b->display(b);
+    cout<<"Intersect ";
+    Node* temp=a->sortedIntersect(a, b);
+    temp->display(temp);
+    head->display(head);
+    head->reverseList(&head);
     head->display(head);
     return 0;
 }
