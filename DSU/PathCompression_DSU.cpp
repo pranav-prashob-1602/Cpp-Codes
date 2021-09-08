@@ -29,9 +29,7 @@ public:
         return parent[v]=findSet(parent[v], parent);    //FOR PATH COMPRESSION
     }
 
-    void unionSet(int x, int y, vector<int>& parent) {
-        int s1=findSet(x, parent);
-        int s2=findSet(y, parent);
+    void unionSet(int s1, int s2, vector<int>& parent) {
         if(s1!=s2) {
             parent[s2]=s1;
         }
@@ -46,7 +44,7 @@ public:
             int s1=findSet(i, parent);
             int s2=findSet(j, parent);
             if(s1!=s2) {
-                unionSet(i, j, parent);
+                unionSet(s1, s2, parent);
             }else {
                 cout<<"Same parents of "<<i<<" "<<j<<" "<<s1<<endl;
                 return true;
