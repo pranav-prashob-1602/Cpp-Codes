@@ -7,23 +7,6 @@
 **
 */
 
-/*
-4
-1 2 3 4
-11
-1 0 2 1
-1 1 3 2
-2 0
-2 1
-2 2
-2 3
-1 2 3 3
-2 0
-2 1
-2 2
-2 3
-*/
-
 #include<bits/stdc++.h>
 
 using namespace std;
@@ -44,50 +27,42 @@ node merge(node a, node b) {
     node t = node(a.val + b.val);
     return t;
 }
-
 vector<node> t;
 
 void build(int ind, int l, int r) {
     if(l==r) {
-        t[ind] = node(v[l]);
+        t[ind] = node(0);
         return;
     }
     int mid = (l+r)/2;
     build(2*ind, l, mid);
     build(2*ind+1, mid+1, r);
-//    t[ind] = merge(t[2*ind], t[2*ind+1]);
+    t[ind] = merge(t[2*ind], t[2*ind+1]);
 }
 
-void update(int ind, int l, int r, int lq, int rq, int val) {
-    if(lq>r || l>rq) {
+void update(int ind, int l, int r, int pos, int val) {
+    if(pos<l || pos>r) {
         return;
     }
-    if(l>=lq && r<=rq) {
-        t[ind] = node(t[ind].val + val);
+    if(l==r) {
+        t[ind] = node(t[ind].val+val);
         return;
     }
     int mid = (l+r)/2;
-    update(2*ind, l, mid, lq, rq, val);
-    update(2*ind+1, mid+1, r, lq, rq, val);
-//    t[ind] = merge(t[2*ind], t[2*ind+1]);
+    update(2*ind, l, mid, pos, val);
+    update(2*ind+1, mid+1, r, pos, val);
+    t[ind] = merge(t[2*ind], t[2*ind+1]);
 }
 
-node query(int ind, int l, int r, int x) {
-    if(l==r) {
-        if(x==l) {
-            return t[ind];
-        }else {
-            return node();
-        }
-    }
-    if(l<=x && x<=r) {
-//        cout<<l<<" "<<r<<endl;
-        int mid = (l+r)/2;
-        node temp =  merge(query(2*ind, l, mid, x), query(2*ind+1, mid+1, r, x));
-        return merge(temp, t[ind]);
-    }else {
+node query(int ind, int l, int r, int lq, int rq) {
+    if(lq>r || l>rq) {
         return node();
     }
+    if(l>=lq && r<=rq) {
+        return t[ind];
+    }
+    int mid = (l+r)/2;
+    return merge(query(2*ind, l, mid, lq, rq), query(2*ind+1, mid+1, r, lq, rq));
 }
 
 void shinchan() {
@@ -105,12 +80,15 @@ void shinchan() {
         if(c==1) {
             int l, r, v;
             cin>>l>>r>>v;
-            update(1, 0, n-1, l, r, v);
+            update(1, 0, n-1, l, v);
+            if(r+1<n) {
+                update(1, 0, n-1, r+1, -v);
+            }
         }else {
             int x;
             cin>>x;
-            node p = query(1, 0, n-1, x);
-            cout<<p.val<<endl;
+            node p = query(1, 0, n-1, 0, x);
+            cout<<v[x]+p.val<<endl;
         }
     }
 }
@@ -121,4 +99,3 @@ int main() {
     shinchan();
     return 0;
 }
-
