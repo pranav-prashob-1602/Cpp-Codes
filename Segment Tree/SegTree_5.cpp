@@ -18,47 +18,31 @@ int n;
 vector<int> v;
 
 struct node {
-    int val, l, r;
+    int val, lval, rval, totval;
 
-    node(int l=-1, int r=-1, int val=INT_MIN) {
+    node(int lval=INT_MIN, int val=INT_MIN, int rval=INT_MIN, int totval=INT_MIN) {
         this->val = val;
-        this->l = l;
-        this->r = r;
+        this->lval = lval;
+        this->rval = rval;
+        this->totval = totval;
     }
 
 };
 
 node merge(node a, node b) {
-    if(a.val>0) {
-        if(b.val>0) {
-            if(a.r==b.l-1) {
-                return node(a.l, b.r, a.val+b.val);
-            }else {
-                if(a.val>b.val) {
-                    return a;
-                }else {
-                    return b;
-                }
-            }
-        }else {
-            return a;
-        }
-    }else if(b.val>0) {
-        return b;
-    }else {
-        if(a.val>b.val) {
-            return a;
-        }else {
-            return b;
-        }
-    }
+    node temp = node();
+    temp.val = max({a.val, b.val, a.rval + b.lval});
+    temp.rval = max({a.rval + b.totval, a.rval});
+    temp.lval = max({b.lval + a.totval, a.lval});
+    temp.totval = a.totval + b.totval;
+    return temp;
 }
 
 vector<node> t;
 
 void build(int ind, int l, int r) {
     if(l==r) {
-        t[ind]=node(l , r, v[l]);
+        t[ind]=node(0, v[l], 0, v[l]);
         return;
     }
     int mid = (l+r)/2;
@@ -72,7 +56,7 @@ void update(int ind, int l, int r, int pos, int val) {
         return;
     }
     if(l==r) {
-        t[ind] = node(l, r, val);
+        t[ind] = node(0, val, 0, val);
         v[l] = val;
         return;
     }
